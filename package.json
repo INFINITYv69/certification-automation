@@ -1,0 +1,13 @@
+{
+  "name": "corsair-ctf-certificate-generator",
+  "version": "1.0.0",
+  "description": "Automated certificate generator - form to PDF",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "puppeteer": "^22.15.0"
+  }
+}

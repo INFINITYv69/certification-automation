@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corsair CTF 2026 — Certificate Portal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at 50% 0%, #1e4d6e 0%, #0d233a 60%, #081627 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #eef3f8;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(197,160,89,0.35);
+    border-radius: 10px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 420px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #c5a059;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 13.5px;
+    color: #9fb3c8;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #c5a059;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  input[type="text"]::placeholder { color: #6b7e91; }
+
+  input[type="text"]:focus {
+    border-color: #c5a059;
+    background: rgba(255,255,255,0.09);
+  }
+
+  button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #c5a059 0%, #e0bd7d 100%);
+    color: #0d233a;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  button:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(197,160,89,0.35); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .status {
+    margin-top: 16px;
+    font-size: 13px;
+    text-align: center;
+    min-height: 18px;
+    color: #9fb3c8;
+  }
+
+  .status.error { color: #e0837f; }
+  .status.success { color: #8fd6a8; }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="eyebrow">Corsair CTF 2026</div>
+    <h1>Certificate Portal</h1>
+    <p class="subtitle">Enter your full name exactly as it should appear on your certificate, then download your personalized PDF instantly.</p>
+
+    <form id="cert-form">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="e.g. Aarav Sharma" required autocomplete="name">
+      <button type="submit" id="submit-btn">Download Certificate</button>
+      <div class="status" id="status"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('cert-form');
+    const btn = document.getElementById('submit-btn');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Generating...';
+      status.textContent = '';
+      status.className = 'status';
+
+      try {
+        const res = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Something went wrong');
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Corsair_CTF_Certificate_${name.replace(/\s+/g, '_')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        status.textContent = 'Certificate downloaded successfully!';
+        status.className = 'status success';
+      } catch (err) {
+        status.textContent = err.message || 'Failed to generate certificate. Please try again.';
+        status.className = 'status error';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Download Certificate';
+      }
+    });
+  </script>
+
+</body>
+</html>
