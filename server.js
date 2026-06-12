@@ -1,7 +1,19 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
+
+// Determine if we are running in a serverless environment (Vercel)
+const isServerless = process.env.VERCEL || process.env.AWS_REGION;
+
+let puppeteer;
+let chromium;
+
+if (isServerless) {
+  puppeteer = require('puppeteer-core');
+  chromium = require('@sparticuz/chromium');
+} else {
+  puppeteer = require('puppeteer');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,14 +57,26 @@ app.post('/generate', async (req, res) => {
     );
 
     // Render to PDF using Puppeteer
-    const browser = await puppeteer.launch({
-      headless: 'new',
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage'
-      ]
-    });
+    let browser;
+    if (isServerless) {
+      // Serverless (Vercel) configuration
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    } else {
+      // Local development configuration
+      browser = await puppeteer.launch({
+        headless: 'new',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage'
+        ]
+      });
+    }
     const page = await browser.newPage();
 
     await page.setContent(filledHtml, { waitUntil: 'networkidle0' });
