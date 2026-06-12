@@ -76,52 +76,55 @@ node -v
 
 ## ☁️ How to Deploy Online (Free Forever)
 
-Because Puppeteer runs a headless Chrome browser, it requires more RAM and system-level libraries than regular static websites. Below are the three best ways to host this app **completely for free forever**.
+Below are the best options to host this app **completely for free forever** without any paid subscriptions.
 
 ---
 
-### Option 1: Koyeb (Recommended — No Sleep!)
-Koyeb provides a free tier that allows you to run one web service continuously **without sleeping/spinning down** due to inactivity. It supports Docker out of the box, making Puppeteer setup extremely reliable.
+### Option 1: Vercel (Highly Recommended — 1-Click Setup & No Sleeping!)
+Vercel is completely free forever, does not require a credit card, and has zero "sleeping" or idle issues. The app is pre-configured to run as a serverless function on Vercel.
 
-1. Create a free account on [Koyeb](https://www.koyeb.com/).
-2. Click **Create Service** and choose **GitHub** as the deployment source.
-3. Authorize Koyeb to access your GitHub account and select your `certification-automation` repository.
-4. Set the **Builder** type to **Docker** (Koyeb will automatically detect the `Dockerfile` we created).
-5. Set the Port to `3000`.
-6. Click **Deploy**. Koyeb will build the container and give you a public URL (e.g., `https://your-app-name.koyeb.app`).
+1. Sign up/log in to [Vercel](https://vercel.com).
+2. Click **Add New** > **Project**.
+3. Import your `certification-automation` repository.
+4. Click **Deploy**. Vercel will automatically read the `vercel.json` file and handle the rest in seconds!
 
 ---
 
 ### Option 2: Hugging Face Spaces (16GB RAM — Great for Heavy Load)
-Hugging Face Spaces is completely free, runs 24/7 (goes to sleep on long idle but wakes up instantly when visited), and provides a massive **16GB RAM and 2 vCPUs** on its free tier. This is excellent for handling many simultaneous PDF generations.
+Hugging Face Spaces is completely free, does not require a credit card, and provides a massive **16GB RAM and 2 vCPUs** on its free tier. This is excellent for handling many simultaneous PDF generations.
 
 1. Sign up/log in to [Hugging Face](https://huggingface.co/).
 2. Click your profile icon and select **New Space**.
 3. Fill in a Space name (e.g. `certification-automation`).
-4. Select **Docker** as the Space SDK.
-5. Under **Docker template**, select **Blank**.
-6. Set Space visibility to **Public**.
-7. Click **Create Space**.
-8. Go to your local computer terminal, add the Hugging Face Space as a git remote, and push your code there. Alternatively, you can upload your files directly to the Space's Files tab.
-9. Hugging Face will build the Docker container and serve the app on its embeddable iframe (or direct URL).
+4. Select **Docker** as the Space SDK and choose **Blank** as the template.
+5. Set Space visibility to **Public** and click **Create Space**.
+6. Add the Hugging Face Space as a Git remote locally and push your code there, or upload your files directly to the Space's Files tab.
 
 ---
 
-### Option 3: Render (Easiest Setup, Free Web Service)
-Render is a very popular PaaS. Their free tier will spin down (sleep) after 15 minutes of inactivity, causing a ~30-second delay on the first request after waking up, but it is free forever.
+### Option 3: Koyeb (Supports Docker, No Sleeping!)
+Koyeb provides a free tier that allows you to run one web service continuously **without sleeping/spinning down** due to inactivity.
+1. Create a free account on [Koyeb](https://www.koyeb.com/).
+2. Click **Create Service** and choose **GitHub** as the deployment source.
+3. Select your `certification-automation` repository.
+4. Set the **Builder** type to **Docker** (Koyeb will automatically build the `Dockerfile`).
+5. Set the Port to `3000` and click **Deploy**.
+
+---
+
+### Option 4: Render (Standard Node, Free Web Service)
+Render is completely free but is limited compared to other services because they charge for Docker services, and standard Node services will sleep after 15 minutes of inactivity (taking ~30 seconds to wake up).
 
 1. Sign up/log in to [Render](https://render.com/).
-2. Click **New** > **Web Service**.
-3. Connect your GitHub repository.
-4. Configure the Web Service settings:
+2. Click **New** > **Web Service** and connect your GitHub repository.
+3. Configure the settings:
    - **Language:** `Node`
    - **Build Command:** `./render-build.sh`
    - **Start Command:** `npm start`
-5. Click **Advanced** and add the following Environment Variable:
+4. Click **Advanced** and add the following Environment Variable:
    - **Key:** `PUPPETEER_CACHE_DIR`
    - **Value:** `/opt/render/.cache/puppeteer`
-6. Choose the **Free** instance type.
-7. Click **Create Web Service**. Render will run the script, install Chrome, and deploy your site.
+5. Choose the **Free** instance type and click **Create Web Service**.
 
 ---
 
