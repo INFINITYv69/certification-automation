@@ -10,7 +10,7 @@ let chromium;
 
 if (isServerless) {
   puppeteer = require('puppeteer-core');
-  chromium = require('@sparticuz/chromium').default;
+  chromium = require('@sparticuz/chromium');
 } else {
   puppeteer = require('puppeteer');
 }
